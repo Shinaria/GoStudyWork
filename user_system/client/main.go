@@ -9,16 +9,22 @@ import (
 
 	"user_system/kitex_gen/GoStudyWork/userSystem/user"
 	"user_system/kitex_gen/GoStudyWork/userSystem/user/userService"
+	"github.com/kitex-contrib/registry-nacos/resolver"
 )
 
 func main(){
-	client, err := userservice.NewClient("GoStudyWork.userSystem.user",client.WithHostPorts("0.0.0.0:8888"))
+	narcosResolver, err := resolver.NewDefaultNacosResolver()
 	if err != nil {
 		log.Fatal(err)
 	}
+	newClient := userservice.MustNewClient(
+		"GoStudyWork.userSystem.user",
+		client.WithResolver(narcosResolver),
+		client.WithRPCTimeout(time.Second*10),
+	)
 	i := 1
 	for {
-		respond, err:= client.GetUserInfo(context.Background(),&user.UserID{No: int64(i)})
+		respond, err:= newClient.GetUserInfo(context.Background(),&user.UserID{No: int64(i)})
 		if err != nil {
 			log.Fatal(err)
 		}

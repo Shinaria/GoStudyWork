@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"net"
 	userServer "user_system/kitex_gen/GoStudyWork/userSystem/user/userservice"
 
 	"github.com/cloudwego/kitex/pkg/rpcinfo"
@@ -14,16 +15,17 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Println(narcosRegistry)
+	log.Println("GET registry success")
 	svr := userServer.NewServer(
 		new(UserServiceImpl),
 		server.WithRegistry(narcosRegistry),
 		server.WithServerBasicInfo(&rpcinfo.EndpointBasicInfo{ServiceName: "GoStudyWork.userSystem.user"}),
+		server.WithServiceAddr(&net.TCPAddr{IP: net.IPv4(127, 0, 0, 1), Port: 8080}),
 	)
 
 	if err := svr.Run(); err != nil {
-		log.Println("server stopped with error: ", err.Error())
+		log.Println("SERVER stopped with error: ", err.Error())
 	} else {
-		log.Println("server stopped")
+		log.Println("SERVER stopped")
 	}
 }
